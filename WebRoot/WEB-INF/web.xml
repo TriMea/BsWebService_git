@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" 
+	xmlns="http://java.sun.com/xml/ns/javaee" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+	http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+  <servlet>
+    <description>This is the description of my J2EE component</description>
+    <display-name>This is the display name of my J2EE component</display-name>
+    <servlet-name>VipPostServlet</servlet-name>
+    <servlet-class>com.dl.servlet.VipPostServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <description>This is the description of my J2EE component</description>
+    <display-name>This is the display name of my J2EE component</display-name>
+    <servlet-name>BsTransportServlet</servlet-name>
+    <servlet-class>com.dl.servlet.BsTransportServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <description>This is the description of my J2EE component</description>
+    <display-name>This is the display name of my J2EE component</display-name>
+    <servlet-name>BsServerServlet</servlet-name>
+    <servlet-class>com.dl.servlet.BsServerServlet</servlet-class>
+  </servlet>
+
+
+
+  <servlet-mapping>
+    <servlet-name>VipPostServlet</servlet-name>
+    <url-pattern>/VipPostServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>BsTransportServlet</servlet-name>
+    <url-pattern>/BsTransportServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>BsServerServlet</servlet-name>
+    <url-pattern>/BsServerServlet</url-pattern>
+  </servlet-mapping>
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+  
+   <resource-ref>
+  <res-ref-name>jdbc/BsCRS</res-ref-name>
+  <res-type>javax.sql.DataSource</res-type>
+  <res-auth>Container</res-auth>
+  </resource-ref>
+  
+  <!-- 编码过滤器-->
+  <filter>  
+  <display-name>EncodingFilter</display-name>  
+  <filter-name>EncodingFilter</filter-name>  
+  <filter-class>com.dl.filter.EncodingFilter</filter-class>  
+  <init-param>  
+    <description></description>  
+    <param-name>encoding</param-name>  
+    <param-value>UTF-8</param-value>  
+  </init-param>  
+</filter>  
+<filter-mapping>  
+  <filter-name>EncodingFilter</filter-name>  
+  <url-pattern>/BsServerServlet</url-pattern> 
+  <url-pattern>/VipPostServlet</url-pattern> 
+</filter-mapping>  
+
+<!-- 身份验证过滤器-->
+  <filter>  
+  <display-name>ValidateFilter</display-name>  
+  <filter-name>ValidateFilter</filter-name>  
+  <filter-class>com.dl.filter.ValidateFilter</filter-class>  
+  
+</filter>  
+<filter-mapping>  
+  <filter-name>ValidateFilter</filter-name>  
+  <url-pattern>/VipPostServlet</url-pattern> 
+</filter-mapping>  
+  
+</web-app>

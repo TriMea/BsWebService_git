@@ -1,0 +1,124 @@
+package com.dl.dao;
+
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import com.dl.datasource.DBPool;
+import com.dl.pojo.RoomMapBean;
+import com.dl.pojo.RoomResourceCount;
+import com.dl.util.CommonTool;
+public class RoomMapDao {
+
+	/*
+	 * 单例模式
+	 */
+	private RoomMapDao() {}  
+    //已经自行实例化   
+    private static final RoomMapDao roomMapDao = new RoomMapDao();  
+    //静态工厂方法   
+    public static RoomMapDao getInstance() {  
+        return roomMapDao;  
+    }  
+    
+    /*
+	 * 根据hotelid获取房态
+	 */
+	public List<RoomMapBean> getRoomMapByHotelid(String hotelid,Integer gt_id)
+	{
+			Connection conn = null;
+			Statement st  = null;
+			ResultSet rs = null;
+			List<RoomMapBean> list = new ArrayList<RoomMapBean>();
+			RoomMapBean rh = null;
+			try {
+				conn = DBPool.getPool().getConnection();
+				String sql = "select a.roomno,a.area,a.floor,a.type,a.base,a.flag,b.value from map_roomno a,ctrl_index_jyo b where a.hotelid=b.item and b.catalog='roommap_index' and a.hotelid='"+hotelid+"' and a.sta!='BU' and a.gt_id="+gt_id;
+				st = conn.createStatement();
+				rs = st.executeQuery(sql);
+				while(rs.next())
+				{
+					    rh = new RoomMapBean();
+						rh.setRoomno(rs.getString(1).trim());
+						rh.setArea(rs.getString(2).trim());
+						rh.setFloor(rs.getString(3).trim());
+						rh.setType(rs.getString(4));
+						rh.setBase(rs.getString(5));
+						rh.setFlag(rs.getString(6).trim());
+						rh.setUpdateTime(rs.getString(7).trim());
+						list.add(rh);
+				}
+			} catch (SQLException e) {
+				
+				e.printStackTrace();
+			}finally{
+				try {
+					CommonTool.closeResultSet(rs);
+					CommonTool.closeStatement(st);
+					CommonTool.closeConnection(conn);
+				} catch (SQLException e) {
+					
+					e.printStackTrace();
+				}
+			}
+	    	
+			
+		return list;
+	}
+	
+	/*
+	 * 获取房间资源统计信息
+	 */
+	public RoomResourceCount getRoomResource(Integer gt_id,String hotelid)
+	{
+	
+		 CallableStatement  cs = null;
+		 HashMap<String, String> mp = null;
+		 Connection conn = null;
+		 RoomResourceCount roomResourceCount = new RoomResourceCount();
+		 try {
+			conn = DBPool.getPool().getConnection();
+			 cs = conn.prepareCall("{call p_xx_roomtyperate_lyy(?,?)}");
+			 cs.setString(1, hotelid);
+			 cs.setInt(2, gt_id);
+			 if(cs.execute())
+			 {
+			
+				 ResultSet rs = cs.getResultSet();
+				 rs.next();
+				 roomResourceCount.setBase0(rs.getInt(1));
+				 roomResourceCount.setBase1(rs.getInt(2));
+				 roomResourceCount.setBase2(rs.getInt(3));
+				 roomResourceCount.setBase3(rs.getInt(4));
+				 roomResourceCount.setBase4(rs.getInt(5));
+				 roomResourceCount.setBase5(rs.getInt(6));
+				 roomResourceCount.setBase6(rs.getInt(7));
+				 roomResourceCount.setBase7(rs.getInt(8));
+				 roomResourceCount.setTtl(rs.getInt(9));
+				 roomResourceCount.setOoc(rs.getInt(10));
+				 roomResourceCount.setRate(rs.getString(11));
+				
+			 }
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally{
+			try {
+				CommonTool.closeCallableStatement(cs);
+				CommonTool.closeConnection(conn);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+				
+		}
+		
+		
+		 
+		return roomResourceCount;
+	}
+}
